@@ -4,24 +4,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Test Demo - 2 - Getting data using GET API calls</title>
+    <title>Test Demo - 3 - Combining API calls and Promises</title>
   </head>
+  <body>
+    <input
+      type="button"
+      ,
+      onclick="getWeather()"
+      value="Get Charleston Weather"
+    />
+  </body>
   <script>
     const url =
       'https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=29414,us'
 
     console.log(url)
+    let prom = new Promise(function(resolve, reject) {
+      const xhr = new XMLHttpRequest()
+      xhr.open('GET', url)
+      xhr.onload = function() {
+        resolve(this.response)
+      }
+      xhr.onerror = function() {
+        reject({
+          status: this.status,
+          statusText: this.statusText,
+          response: this.response
+        })
+      }
+      xhr.send(null)
+    })
 
-    const xhr = new XMLHttpRequest()
-    xhr.open('GET', url)
-    xhr.onload = function() {
-      console.log('Successfully got data.')
-      console.log(this.response)
-    }
-    xhr.onerror = function() {
-      console.error('Error, did not get data!')
-      console.error(this.response)
-    }
-    xhr.send(null)
+    prom.then(function(response) {
+      console.log(prom)
+      console.info(response)
+    })
+
+    prom.catch(function(reject) {
+      console.log(prom)
+      console.error('Error!')
+      console.error(reject)
+    })
+
+    console.log('Promise called, pending results.')
+    console.log(prom)
   </script>
 </html>
