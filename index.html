@@ -15,38 +15,40 @@
     />
   </body>
   <script>
-    const url =
-      'https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=29414,us'
+    function getWeather() {
+      const url =
+        'https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=29414,us'
 
-    console.log(url)
-    let prom = new Promise(function(resolve, reject) {
-      const xhr = new XMLHttpRequest()
-      xhr.open('GET', url)
-      xhr.onload = function() {
-        resolve(this.response)
-      }
-      xhr.onerror = function() {
-        reject({
-          status: this.status,
-          statusText: this.statusText,
-          response: this.response
-        })
-      }
-      xhr.send(null)
-    })
+      console.log(url)
+      let prom = new Promise(function(resolve, reject) {
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', url)
+        xhr.onload = function() {
+          resolve(this.response)
+        }
+        xhr.onerror = function() {
+          reject({
+            status: this.status,
+            statusText: this.statusText,
+            response: this.response
+          })
+        }
+        xhr.send(null)
+      })
 
-    prom.then(function(response) {
+      prom.then(function(response) {
+        console.log(prom)
+        console.info(response)
+      })
+
+      prom.catch(function(reject) {
+        console.log(prom)
+        console.error('Error!')
+        console.error(reject)
+      })
+
+      console.log('Promise called, pending results.')
       console.log(prom)
-      console.info(response)
-    })
-
-    prom.catch(function(reject) {
-      console.log(prom)
-      console.error('Error!')
-      console.error(reject)
-    })
-
-    console.log('Promise called, pending results.')
-    console.log(prom)
+    }
   </script>
 </html>
