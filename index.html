@@ -29,7 +29,8 @@
         const xhr = new XMLHttpRequest()
         xhr.open('GET', url)
         xhr.onload = function() {
-          resolve(this.response)
+          const responseJSON = JSON.parse(this.response)
+          resolve(responseJSON)
         }
         xhr.onerror = function() {
           reject({
