@@ -67,7 +67,11 @@
           const temperature = responseJSON.main.temp
           const tempInt = parseInt((parseInt(temperature) - 273.15) *9 /5 +32)
 
-          document.getElementById("divTemperature").innerHTML = tempInt.toString()
+          let color = "black";
+          if (tempInt<50) {color = "blue"}
+          if (tempInt>80) {color = "red"}
+
+          document.getElementById("divTemperature").innerHTML = `<span style='color: ${color}'> ${tempInt.toString()} </span>`
         }
 
       })
