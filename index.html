@@ -13,34 +13,29 @@
       onclick="getWX(document.getElementById('txtLocation').value)"
       value="Get the weather"
     />
-    <p>Conditions:</p>
-    <div id="divConditions" style="border: 1px solid gray"></div>
-    <p>Temperature:</p>
-    <div id="divTemperature" style="border: 1px solid gray"></div>
-    <p>URL:</p>
-    <div id="divURL" style="border: 1px solid gray"></div>
-    <p>Results:</p>
-    <div id="divResults" style="border: 1px solid gray"></div></div>
+    <p>Forecast:</p>
+    <div id="divForecast" style="border: 1px solid gray"></div>
   </body>
   <script>
     function getWX(location) {
-      const url =
-        `https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=${location},us`
-
-      document.getElementById("divURL").innerHTML = url;
+      const url = `https://api.openweathermap.org/data/2.5/forecast/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=${location},us`
 
       console.log(url)
       const prom = new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest()
         xhr.open('GET', url)
         xhr.onload = function() {
-          this.status >= 200 && this.status <= 299 
-          ? resolve(this.response) 
-          : reject({status: this.status, statusText: this.statusText, response: this.response})
-          }
+          this.status >= 200 && this.status <= 299
+            ? resolve(this.response)
+            : reject({
+                status: this.status,
+                statusText: this.statusText,
+                response: this.response
+              })
+        }
 
-          // const responseJSON = JSON.parse(this.response)
-          // resolve(responseJSON)
+        // const responseJSON = JSON.parse(this.response)
+        // resolve(responseJSON)
         xhr.onerror = function() {
           reject({
             status: this.status,
@@ -53,39 +48,39 @@
 
       prom.then(function(response) {
         console.log(prom)
-        const responseJSON = JSON.parse(response);
-
-        console.log(JSON.stringify(responseJSON, null, 4))
-        document.getElementById("divResults").innerHTML = `<pre>${JSON.stringify(responseJSON, null, 4)}</pre>`
-        
-        if (responseJSON.weather !== undefined) {
-          const conditions = responseJSON.weather[0].main
-          document.getElementById("divConditions").innerHTML = conditions
+        const responseJSON = JSON.parse(response)
+        let f = ''
+        // responseJSON.list.forEach(item => {
+        //   f = ``
+        // })
+        for (let i = 0; i < responseJSON.list.length; i++) {
+          f +=
+            responseJSON.list[i].dt_txt +
+            '\t' +
+            responseJSON.list[i].weather[0].main +
+            '\t\t' +
+            ConvertTempKelvinToFahrenheit(
+              parseInt(responseJSON.list[i].main.temp)
+            ) +
+            '\n'
         }
-
-        if (responseJSON.main !== undefined) {
-          const temperature = responseJSON.main.temp
-          const tempInt = parseInt((parseInt(temperature) - 273.15) *9 /5 +32)
-
-          let color = "black";
-          if (tempInt<50) {color = "blue"}
-          if (tempInt>80) {color = "red"}
-
-          document.getElementById("divTemperature").innerHTML = `<span style='color: ${color}'> ${tempInt.toString()} </span>`
-        }
-
+        document.getElementById('divForecast').innerHTML = `<pre>${f}</pre>`
       })
 
       prom.catch(function(reject) {
         console.log(prom)
-        
-        document.getElementById("divResults").innerHTML = `<p>Error!</p> 
+
+        document.getElementById('divResults').innerHTML = `<p>Error!</p>
         <p>Status: ${reject.status} (${reject.statusText})</p>
         <p>Response: ${reject.response}</p>`
       })
 
       console.log('Promise called, pending results.')
       console.log(prom)
+    }
+
+    const ConvertTempKelvinToFahrenheit = kelvin => {
+      return Math.round(((kelvin - 273.15) * 9) / 5 + 32)
     }
   </script>
 </html>
