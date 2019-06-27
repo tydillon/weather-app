@@ -22,6 +22,8 @@
       const url =
         'https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=29414,us'
 
+      document.getElementById("divURL").innerHTML = url;
+
       console.log(url)
       let prom = new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest()
