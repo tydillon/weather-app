@@ -4,34 +4,43 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Test Demo - 4 - Better Display on the Webpage</title>
+    <title>Test Demo - 5 - Show nicely formatted weather bits</title>
   </head>
   <body>
+    <p>Location Name: <input type="text" id="txtLocation" /></p>
     <input
       type="button"
-      onclick="getWeather()"
-      value="Get Charleston Weather"
+      onclick="getWX(document.getElementById('txtLocation').value)"
+      value="Get the weather"
     />
+    <p>Conditions:</p>
+    <div id="divConditions" style="border: 1px solid gray"></div>
+    <p>Temperature:</p>
+    <div id="divTemperature" style="border: 1px solid gray"></div>
     <p>URL:</p>
     <div id="divURL" style="border: 1px solid gray"></div>
     <p>Results:</p>
     <div id="divResults" style="border: 1px solid gray"></div></div>
   </body>
   <script>
-    function getWeather() {
+    function getWX(location) {
       const url =
-        'https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=29414,us'
+        `https://api.openweathermap.org/data/2.5/weather/?APPID=49fc9c90719fe3e73f072fa65c32bfe8&zip=${location},us`
 
       document.getElementById("divURL").innerHTML = url;
 
       console.log(url)
-      let prom = new Promise(function(resolve, reject) {
+      const prom = new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest()
         xhr.open('GET', url)
         xhr.onload = function() {
-          const responseJSON = JSON.parse(this.response)
-          resolve(responseJSON)
-        }
+          this.status >= 200 && this.status <= 299 
+          ? resolve(this.response) 
+          : reject({status: this.status, statusText: this.statusText, response: this.response})
+          }
+
+          // const responseJSON = JSON.parse(this.response)
+          // resolve(responseJSON)
         xhr.onerror = function() {
           reject({
             status: this.status,
@@ -44,8 +53,23 @@
 
       prom.then(function(response) {
         console.log(prom)
+        const responseJSON = JSON.parse(response);
+
+        console.log(JSON.stringify(responseJSON, null, 4))
+        document.getElementById("divResults").innerHTML = `<pre>${JSON.stringify(responseJSON, null, 4)}</pre>`
         
-        document.getElementById("divResults").innerHTML = `<pre>${JSON.stringify(response, null, 4)}</pre>`
+        if (responseJSON.weather !== undefined) {
+          const conditions = responseJSON.weather[0].main
+          document.getElementById("divConditions").innerHTML = conditions
+        }
+
+        if (responseJSON.main !== undefined) {
+          const temperature = responseJSON.main.temp
+          const tempInt = parseInt((parseInt(temperature) - 273.15) *9 /5 +32)
+
+          document.getElementById("divTemperature").innerHTML = tempInt.toString()
+        }
+
       })
 
       prom.catch(function(reject) {
