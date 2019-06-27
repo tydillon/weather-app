@@ -4,15 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Test Demo - 3 - Combining API calls and Promises</title>
+    <title>Test Demo - 4 - Better Display on the Webpage</title>
   </head>
   <body>
     <input
       type="button"
-      ,
       onclick="getWeather()"
       value="Get Charleston Weather"
     />
+    <p>URL:</p>
+    <div id="divURL" style="border: 1px solid gray"></div>
+    <p>Results:</p>
+    <div id="divResults" style="border: 1px solid gray"></div></div>
   </body>
   <script>
     function getWeather() {
@@ -38,13 +41,16 @@
 
       prom.then(function(response) {
         console.log(prom)
-        console.info(response)
+        
+        document.getElementById("divResults").innerHTML = `<pre>${JSON.stringify(response, null, 4)}</pre>`
       })
 
       prom.catch(function(reject) {
         console.log(prom)
-        console.error('Error!')
-        console.error(reject)
+        
+        document.getElementById("divResults").innerHTML = `<p>Error!</p> 
+        <p>Status: ${reject.status} (${reject.statusText})</p>
+        <p>Response: ${reject.response}</p>`
       })
 
       console.log('Promise called, pending results.')
